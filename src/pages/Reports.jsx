@@ -15,7 +15,7 @@ import StatCard from "../components/StatCard.jsx";
 import ChartTooltip from "../components/ChartTooltip.jsx";
 import TransactionList from "../components/TransactionList.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
-import { formatCurrency, formatDate, colorForIndex } from "../utils/format";
+import { formatCurrency, formatCompactINR, formatDate, colorForIndex } from "../utils/format";
 
 const RANGES = [
   { key: "this-month", label: "This Month" },
