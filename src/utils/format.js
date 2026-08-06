@@ -50,7 +50,7 @@ export const INCOME_CATEGORIES = [
   "Other",
 ];
 
-export const ACCOUNTS = ["Cash", "Bank", "Credit Card", "Wallet", "Savings"];
+export const ACCOUNTS = ["Cash", "Bank","UPI", "Credit Card", "Wallet", "Savings"];
 
 // Fixed categorical palette order (dataviz skill) — never cycle/reorder.
 export const CATEGORY_COLORS = [
