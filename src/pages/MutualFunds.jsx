@@ -3,7 +3,7 @@ import { Plus, LineChart, TrendingUp, TrendingDown, Wallet, Pencil, Trash2 } fro
 import api from "../api/axios";
 import StatCard from "../components/StatCard.jsx";
 import MfModal from "../components/MfModal.jsx";
-import { formatCurrency, formatDate } from "../utils/format";
+import { formatCurrency, formatDate, maskNumber } from "../utils/format";
 
 export default function MutualFunds() {
   const [mfs, setMfs] = useState([]);
@@ -139,7 +139,7 @@ export default function MutualFunds() {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-medium truncate">
-                              {mf.description || (mf.folioNumber ? `Folio ${mf.folioNumber}` : mf.investmentType)}
+                              {mf.description || (mf.folioNumber ? `Folio ${maskNumber(mf.folioNumber)}` : mf.investmentType)}
                             </p>
                             <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium bg-brand-500/10 text-brand-600 dark:text-brand-300">
                               {mf.investmentType}
@@ -147,7 +147,7 @@ export default function MutualFunds() {
                           </div>
                           <p className="text-xs text-ink-muted truncate">
                             {[
-                              mf.folioNumber && `Folio ${mf.folioNumber}`,
+                              mf.folioNumber && `Folio ${maskNumber(mf.folioNumber)}`,
                               mf.category,
                               mf.units ? `${mf.units} units` : null,
                               formatDate(mf.investmentDate),

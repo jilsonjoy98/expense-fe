@@ -33,6 +33,7 @@ const RANGES = [
   { key: "custom", label: "Specific Month" },
 ];
 
+
 function getRangeDates(key) {
   const now = new Date();
   switch (key) {
@@ -113,16 +114,23 @@ export default function Reports() {
   const net = totalIncome - totalExpense;
 
   const handleExportCsv = () => {
+    // Quote any field containing a comma, quote, or newline (CSV escaping) —
+    // formatDate() output like "Jan 1, 2026" otherwise splits into an extra
+    // column and shifts every field after it.
+    const csvField = (value) => {
+      const str = String(value ?? "");
+      return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+    };
     const header = ["Date", "Type", "Category", "Account", "Description", "Amount"];
     const rows = transactions.map((t) => [
       formatDate(t.date),
       t.type,
       t.category,
       t.account,
-      (t.description || "").replace(/,/g, " "),
+      t.description || "",
       t.amount,
     ]);
-    const csv = [header, ...rows].map((r) => r.join(",")).join("\n");
+    const csv = [header, ...rows].map((r) => r.map(csvField).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

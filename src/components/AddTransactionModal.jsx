@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { X, Image as ImageIcon, Loader2, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 import api from "../api/axios";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, ACCOUNTS } from "../utils/format";
+import { encryptPayload } from "../utils/crypto";
 
 const TODAY = () => new Date().toISOString().slice(0, 10);
 
@@ -59,8 +60,12 @@ export default function AddTransactionModal({ open, onClose, defaultType = "expe
     }
     setSubmitting(true);
     try {
+      // The receipt image can't go through the JSON encryption scheme, but
+      // everything else can — encrypt the text fields into one opaque
+      // "payload" field so they don't sit in the clear next to the file.
+      // Must match backend/routes/transactionRoutes.js's decryptRequest.
       const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+      fd.append("payload", await encryptPayload(form));
       if (receiptFile) fd.append("receiptImage", receiptFile);
 
       await api.post("/transactions", fd, {

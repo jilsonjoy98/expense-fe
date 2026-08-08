@@ -36,6 +36,19 @@ export function monthRangeFromValue(value) {
   return { from, to };
 }
 
+// Whole days between now and a future date (rounded up), floored at 0.
+export function daysRemaining(date) {
+  const diffMs = new Date(date).setHours(23, 59, 59, 999) - Date.now();
+  return Math.max(0, Math.ceil(diffMs / 86400000));
+}
+
+// Mask all but the last 2 digits of an identifier (account/folio number), e.g. "1234567890" -> "••••••••90".
+export function maskNumber(value) {
+  const str = String(value || "");
+  if (str.length <= 2) return str;
+  return "•".repeat(str.length - 2) + str.slice(-2);
+}
+
 export function formatDate(date) {
   return new Date(date).toLocaleDateString("en-US", {
     month: "short",

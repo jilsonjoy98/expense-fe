@@ -3,7 +3,7 @@ import { Plus, Landmark, TrendingUp, Wallet, Pencil, Trash2 } from "lucide-react
 import api from "../api/axios";
 import StatCard from "../components/StatCard.jsx";
 import FdModal from "../components/FdModal.jsx";
-import { formatCurrency, formatDate } from "../utils/format";
+import { formatCurrency, formatDate, daysRemaining, maskNumber } from "../utils/format";
 
 export default function FixedDeposits() {
   const [fds, setFds] = useState([]);
@@ -132,8 +132,9 @@ export default function FixedDeposits() {
               <ul className="divide-y divide-black/[0.06] dark:divide-white/[0.08]">
                 {group.items.map((fd) => {
                   const matured = isMatured(fd);
+                  const remaining = matured ? null : daysRemaining(fd.endDate);
                   const metaParts = [
-                    fd.accountNumber && `A/C ${fd.accountNumber}`,
+                    fd.accountNumber && `A/C ${maskNumber(fd.accountNumber)}`,
                     `${fd.interestRate}%`,
                     formatPeriod(fd),
                     `${formatDate(fd.startDate)} – ${formatDate(fd.endDate)}`,
@@ -143,16 +144,16 @@ export default function FixedDeposits() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-medium truncate">
-                            {fd.description || (fd.accountNumber ? `A/C ${fd.accountNumber}` : "Fixed Deposit")}
+                            {fd.description || (fd.accountNumber ? `A/C ${maskNumber(fd.accountNumber)}` : "Fixed Deposit")}
                           </p>
                           <span
                             className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
                               matured
                                 ? "bg-status-good/10 text-status-good"
-                                : "bg-brand-500/10 text-brand-600 dark:text-brand-300"
+                                : "bg-brand-500/10 text-red-600 dark:text-red-300"
                             }`}
                           >
-                            {matured ? "Matured" : "Active"}
+                            {matured ? "Matured" : `${remaining}d left`}
                           </span>
                         </div>
                         <p className="text-xs text-ink-muted truncate">{metaParts.join(" · ")}</p>
