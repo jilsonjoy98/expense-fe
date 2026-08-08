@@ -8,19 +8,17 @@ export default function BottomNav() {
       key={to}
       to={to}
       end={end}
-      className="flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition"
+      className="flex flex-1 items-center justify-center py-2.5 text-[11px] font-medium transition"
     >
       {({ isActive }) => (
-        <>
-          <span
-            className={`flex h-7 w-9 items-center justify-center rounded-full transition ${
-              isActive ? "bg-brand-500/15 dark:bg-brand-400/20" : ""
-            }`}
-          >
-            <Icon size={19} className={isActive ? "text-brand-600 dark:text-brand-300" : "text-ink-muted"} />
-          </span>
+        <span
+          className={`flex flex-col items-center justify-center gap-0.5 rounded-2xl px-3 py-1 transition ${
+            isActive ? "bg-brand-500/15 dark:bg-brand-400/20" : ""
+          }`}
+        >
+          <Icon size={19} className={isActive ? "text-brand-600 dark:text-brand-300" : "text-ink-muted"} />
           {isActive && <span className="text-brand-600 dark:text-brand-300">{label}</span>}
-        </>
+        </span>
       )}
     </NavLink>
   );

@@ -1,25 +1,31 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Plus, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { Plus, ArrowDownCircle, ArrowUpCircle, X } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import api from "../api/axios";
 import TransactionList from "../components/TransactionList.jsx";
 import StatCard from "../components/StatCard.jsx";
-import { formatCurrency } from "../utils/format";
+import { formatCurrency, monthRangeFromValue, currentMonthValue } from "../utils/format";
 
 export default function TransactionsPage({ type }) {
   const { openAddModal } = useOutletContext() || {};
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [monthFilter, setMonthFilter] = useState(currentMonthValue());
 
   const isIncome = type === "income";
   const title = isIncome ? "Income" : "Expenses";
   const Icon = isIncome ? ArrowDownCircle : ArrowUpCircle;
 
   const load = useCallback(async () => {
-    const { data } = await api.get("/transactions", { params: { type } });
+    setLoading(true);
+    const { from, to } = monthRangeFromValue(monthFilter);
+    const params = { type };
+    if (from) params.from = from.toISOString();
+    if (to) params.to = to.toISOString();
+    const { data } = await api.get("/transactions", { params });
     setTransactions(data.transactions);
     setLoading(false);
-  }, [type]);
+  }, [type, monthFilter]);
 
   useEffect(() => {
     load();
@@ -51,6 +57,24 @@ export default function TransactionsPage({ type }) {
         </button>
       </div>
 
+      <div className="flex items-center gap-2">
+        <input
+          type="month"
+          value={monthFilter}
+          onChange={(e) => setMonthFilter(e.target.value)}
+          className="input-field w-auto"
+        />
+        {monthFilter && (
+          <button
+            onClick={() => setMonthFilter("")}
+            title="Show all time"
+            className="rounded-lg p-1.5 text-ink-muted hover:bg-black/[0.06] dark:hover:bg-white/[0.08] hover:text-brand-500 transition"
+          >
+            <X size={16} />
+          </button>
+        )}
+      </div>
+
       <StatCard
         label={`Total ${title}`}
         value={formatCurrency(total)}
@@ -67,7 +91,9 @@ export default function TransactionsPage({ type }) {
           <TransactionList
             transactions={transactions}
             onDelete={handleDelete}
-            emptyMessage={`No ${title.toLowerCase()} recorded yet`}
+            emptyMessage={
+              monthFilter ? `No ${title.toLowerCase()} in this month` : `No ${title.toLowerCase()} recorded yet`
+            }
           />
         )}
       </div>

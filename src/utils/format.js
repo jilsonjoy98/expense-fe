@@ -18,6 +18,24 @@ export function formatCompactINR(value) {
   return `₹${v}`;
 }
 
+// Current month as an <input type="month"> value ("YYYY-MM") — used as the
+// default selection for month filters.
+export function currentMonthValue() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+// Turn an <input type="month"> value ("YYYY-MM") into a {from, to} range
+// spanning that whole calendar month. Returns {} for an empty value.
+export function monthRangeFromValue(value) {
+  if (!value) return {};
+  const [year, month] = value.split("-").map(Number);
+  if (!year || !month) return {};
+  const from = new Date(year, month - 1, 1);
+  const to = new Date(year, month, 0, 23, 59, 59, 999);
+  return { from, to };
+}
+
 export function formatDate(date) {
   return new Date(date).toLocaleDateString("en-US", {
     month: "short",

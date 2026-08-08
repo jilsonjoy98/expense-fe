@@ -15,7 +15,14 @@ import StatCard from "../components/StatCard.jsx";
 import ChartTooltip from "../components/ChartTooltip.jsx";
 import TransactionList from "../components/TransactionList.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
-import { formatCurrency, formatCompactINR, formatDate, colorForIndex } from "../utils/format";
+import {
+  formatCurrency,
+  formatCompactINR,
+  formatDate,
+  colorForIndex,
+  monthRangeFromValue,
+  currentMonthValue,
+} from "../utils/format";
 
 const RANGES = [
   { key: "this-month", label: "This Month" },
@@ -23,6 +30,7 @@ const RANGES = [
   { key: "6m", label: "Last 6 Months" },
   { key: "year", label: "This Year" },
   { key: "all", label: "All Time" },
+  { key: "custom", label: "Specific Month" },
 ];
 
 function getRangeDates(key) {
@@ -43,6 +51,7 @@ function getRangeDates(key) {
 
 export default function Reports() {
   const [range, setRange] = useState("this-month");
+  const [customMonth, setCustomMonth] = useState(currentMonthValue());
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
@@ -51,13 +60,19 @@ export default function Reports() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { from } = getRangeDates(range);
     const params = {};
-    if (from) params.from = from.toISOString();
+    if (range === "custom") {
+      const { from, to } = monthRangeFromValue(customMonth);
+      if (from) params.from = from.toISOString();
+      if (to) params.to = to.toISOString();
+    } else {
+      const { from } = getRangeDates(range);
+      if (from) params.from = from.toISOString();
+    }
     const { data } = await api.get("/transactions", { params });
     setTransactions(data.transactions);
     setLoading(false);
-  }, [range]);
+  }, [range, customMonth]);
 
   useEffect(() => {
     load();
@@ -112,7 +127,7 @@ export default function Reports() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `transactions-${range}.csv`;
+    a.download = `transactions-${range === "custom" ? customMonth : range}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -146,6 +161,15 @@ export default function Reports() {
           </button>
         ))}
       </div>
+
+      {range === "custom" && (
+        <input
+          type="month"
+          value={customMonth}
+          onChange={(e) => setCustomMonth(e.target.value)}
+          className="input-field w-auto"
+        />
+      )}
 
       {loading ? (
         <div className="flex h-40 items-center justify-center">

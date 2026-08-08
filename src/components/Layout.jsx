@@ -5,25 +5,29 @@ import Sidebar from "./Sidebar.jsx";
 import BottomNav from "./BottomNav.jsx";
 import AddTransactionModal from "./AddTransactionModal.jsx";
 import FdModal from "./FdModal.jsx";
+import MfModal from "./MfModal.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 export default function Layout() {
   const [modalOpen, setModalOpen] = useState(false);
   const [defaultType, setDefaultType] = useState("expense");
   const [fdModalOpen, setFdModalOpen] = useState(false);
+  const [mfModalOpen, setMfModalOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const isFdsPage = location.pathname.startsWith("/fds");
+  const isMfsPage = location.pathname.startsWith("/mfs");
 
   const openModal = (type = "expense") => {
     setDefaultType(type);
     setModalOpen(true);
   };
 
-  // On the Fixed Deposits page, the floating mobile button adds an FD
-  // instead of a transaction.
+  // On the Fixed Deposits / Mutual Funds pages, the floating mobile button
+  // adds an FD / MF instead of a transaction.
   const handleMobileAdd = () => {
     if (isFdsPage) setFdModalOpen(true);
+    else if (isMfsPage) setMfModalOpen(true);
     else openModal("expense");
   };
 
@@ -58,7 +62,7 @@ export default function Layout() {
       {/* Floating add button, mobile only — sits above the bottom nav pill */}
       <button
         onClick={handleMobileAdd}
-        aria-label={isFdsPage ? "Add fixed deposit" : "Add transaction"}
+        aria-label={isFdsPage ? "Add fixed deposit" : isMfsPage ? "Add mutual fund" : "Add transaction"}
         className="md:hidden fixed right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand-500 text-white shadow-lg shadow-brand-500/40 active:scale-95 transition"
         style={{ bottom: "calc(env(safe-area-inset-bottom) + 5.75rem)" }}
       >
@@ -71,6 +75,7 @@ export default function Layout() {
         defaultType={defaultType}
       />
       <FdModal open={fdModalOpen} onClose={() => setFdModalOpen(false)} />
+      <MfModal open={mfModalOpen} onClose={() => setMfModalOpen(false)} />
     </div>
   );
 }

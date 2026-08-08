@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Income from "./pages/Income.jsx";
 import Expenses from "./pages/Expenses.jsx";
 import FixedDeposits from "./pages/FixedDeposits.jsx";
+import MutualFunds from "./pages/MutualFunds.jsx";
 import Reports from "./pages/Reports.jsx";
 import Layout from "./components/Layout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/income" element={<Income />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/fds" element={<FixedDeposits />} />
+        <Route path="/mfs" element={<MutualFunds />} />
         <Route path="/reports" element={<Reports />} />
       </Route>
 
